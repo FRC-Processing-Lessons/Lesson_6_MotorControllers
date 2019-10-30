@@ -9,10 +9,11 @@
 
 import org.gamecontrolplus.*;
 
-class SpeedControllerGroup{
+class SpeedControllerGroup implements SpeedController{
 
   private final SpeedController[] groupControllers;
   private boolean isInverted;
+  private boolean enabled;
   
   /**
    * Create a new SpeedControllerGroup with the provided SpeedControllers.
@@ -24,6 +25,7 @@ class SpeedControllerGroup{
       groupControllers[i] = speedControllers[i];
     }
     this.isInverted = false;
+    this.enabled = true;
   }
     
   /**
@@ -41,7 +43,7 @@ class SpeedControllerGroup{
    * Returns 0.0 if none exist.
    */
   public double get(){
-    if(groupControllers.length>0)
+    if(groupControllers.length>0 && enabled)
       return groupControllers[0].get() * (isInverted? -1:1); 
     return 0.0;
   }
@@ -60,24 +62,33 @@ class SpeedControllerGroup{
   public boolean getInverted(){
     return this.isInverted;
   } 
-}
-
-class CANTalonSRX extends SpeedController{
-
-  public CANTalonSRX(int deviceNumber){
-    super(deviceNumber);
+  
+  /**
+   * Disables the speed controller.  Cannot be undone without restarting the robot.
+   */
+  public void disable(){
+    this.enabled = false;
   }
   
+  /**
+   * Stops motor movement.  Motor can be moved again by calling set wihtout having to re-enable the motor.
+   */
+  public void stopMotor(){
+    this.set(0); 
+  }
 }
 
-class SpeedController{
+class CANTalonSRX implements SpeedController{
   
   private double speed;
   private int deviceNumber;
+  private boolean isInverted;
+  private boolean enabled;
 
-  public SpeedController(int deviceNumber){
+  public CANTalonSRX(int deviceNumber){
     this.speed = 0;
     this.deviceNumber = deviceNumber;
+    this.enabled = true;
   }
   
   public void set(double speed){
@@ -87,7 +98,34 @@ class SpeedController{
   public double get(){
     return this.speed; 
   } 
+  
+  public void setInverted(boolean isInverted){
+    this.isInverted = isInverted; 
+  }
+  
+  public boolean getInverted(){
+    return this.isInverted;
+  }
+  
+  public void disable(){
+    this.enabled = false;
+  }
+  
+  public void stopMotor(){
+    this.speed = 0; 
+  }
 }
+
+interface SpeedController{
+ 
+  void set(double speed);
+  double get();
+  void setInverted(boolean isInverted);
+  boolean getInverted();
+  void disable();
+  void stopMotor();
+}
+
 
 class XboxController{
   
@@ -132,8 +170,73 @@ class XboxController{
     }
     return 0.0;
   }
+}
 
+public class DifferentialDrive{
   
+  private SpeedController leftMotor;
+  private SpeedController rightMotor;
+  public double xSlider;
+  public double ySlider;
+  
+  public DifferentialDrive(SpeedController leftMotor, SpeedController rightMotor){
+    this.leftMotor = leftMotor;
+    this.rightMotor = rightMotor;
+  }
+  
+  public void arcadeDrive(double xSpeed, double zRotation, boolean squareInputs){
+    this.xSlider = xSpeed;
+    this.ySlider = zRotation;
+    xSpeed = MathUtils.clamp(xSpeed, -1.0, 1.0);
+    zRotation = MathUtils.clamp(zRotation, -1.0, 1.0);
+    if (squareInputs) {
+      xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
+      zRotation = Math.copySign(zRotation * zRotation, zRotation);
+    }
+    double leftMotorOutput;
+    double rightMotorOutput;
+
+    double maxInput = Math.copySign(Math.max(Math.abs(xSpeed), Math.abs(zRotation)), xSpeed);
+
+    if (xSpeed >= 0.0) {
+      // First quadrant, else second quadrant
+      if (zRotation >= 0.0) {
+        leftMotorOutput = maxInput;
+        rightMotorOutput = xSpeed - zRotation;
+      } else {
+        leftMotorOutput = xSpeed + zRotation;
+        rightMotorOutput = maxInput;
+      }
+    } else {
+      // Third quadrant, else fourth quadrant
+      if (zRotation >= 0.0) {
+        leftMotorOutput = xSpeed + zRotation;
+        rightMotorOutput = maxInput;
+      } else {
+        leftMotorOutput = maxInput;
+        rightMotorOutput = xSpeed - zRotation;
+      }
+    }
+
+    leftMotor.set(MathUtils.clamp(leftMotorOutput, -1.0, 1.0) * 1);
+    rightMotor.set(MathUtils.clamp(rightMotorOutput, -1.0, 1.0) * 1);
+  }
+}
+
+public static final class MathUtils{
+  private MathUtils() {
+    throw new AssertionError("utility class");
+  }
+  /**
+   * Returns value clamped between low and high boundaries.
+   *
+   * @param value Value to clamp.
+   * @param low   The lower boundary to which to clamp value.
+   * @param high  The higher boundary to which to clamp value.
+   */
+  public static double clamp(double value, double low, double high) {
+    return Math.max(low, Math.min(value, high));
+  }
 }
 
 public enum Hand{

@@ -8,3 +8,11 @@ application.windows32
 application.windows64
 application.macosx
 out
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip

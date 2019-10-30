@@ -1,26 +1,38 @@
+/*
+FRC Java Lessons Using Processing
+Lesson 6 - Robot Simulation
+Copyright (c) 2019 Shichao Liang
+See attached MIT license for usage rights.
+In this lesson, students will learn how to simulate the FRC robot using CAN Talon SRXs,
+an Xbox Controller, and a differential drive with arcade-style inputs.
+*/ 
+
+/*
+  Preamble - For this lesson, all of the TODO tasks will be in the "Robot" tab.  All other
+  tabs are code provided for you as part of the FRC WPI Library.
+*/
+
+/*
+  For directions, please see the README: 
+  https://github.com/FRC-Processing-Lessons/Lesson_5_Conditionals/blob/master/README.md
+*/
+
+/* ------------- ALL CODE GOES BELOW HERE --------------- */
+
 import org.gamecontrolplus.*;
 
 Robot myRobot;
 ControlIO control;
-XboxController xbox;
-
 
 void setup(){
   size(1000, 800);
   background(0,0,0);
-  myRobot = new Robot(control);
   control = ControlIO.getInstance(this);
-  xbox = new XboxController("Controller (Xbox One For Windows)", control);
-  
+  myRobot = new Robot(control);
 }
 
 void draw(){
   background(0,0,0);
   myRobot.teleopPeriodic();
   myRobot.show();
-  float x = (float) xbox.getX(Hand.kLeft);
-  float y = (float) xbox.getY(Hand.kLeft);
-  System.out.println("X: "+x);
-  System.out.println("Y: "+y);
-  myRobot.setVelocity(new PVector(x, y));
 }
