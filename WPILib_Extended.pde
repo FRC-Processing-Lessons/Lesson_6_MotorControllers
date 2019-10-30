@@ -7,6 +7,11 @@
 /* ProcessingRobot base for Processing FRC Simulation Lessons                 */
 /*----------------------------------------------------------------------------*/
 
+/**
+ * Processing Robot is a substitute for Robot Base for the Processing simulation
+ * environment.  This is very feature-sparse, and does not support the full
+ * range of functionality included in Robot Base.
+ */
 public class ProcessingRobot{
   
   PVector velocity;
@@ -16,6 +21,12 @@ public class ProcessingRobot{
   int robotHeight;
   public DifferentialDrive drive;
   
+  /**
+   * Environment-specific initalization for the robot.
+   * @param initialPosition PVector for the inital position of the robot on-canvas.
+   * @param w Width of the robot on-canvas.
+   * @param h Height of the robot on-canvas.
+   */
   public ProcessingRobot(PVector initialPosition, int w, int h){
     this.velocity = new PVector(0,0);
     this.position = initialPosition;
@@ -25,6 +36,9 @@ public class ProcessingRobot{
     drive = null;
   }
   
+  /**
+   * Shows the robot on the canvas after calculating moves.
+   */
   public void show(){
     this.move();
     rectMode(CENTER);
@@ -36,8 +50,10 @@ public class ProcessingRobot{
     popMatrix();
   }
   
+  /**
+   * Moves the robot according to inputs, but only if the drive has been initialized.
+   */
   public void move(){
-    
     if(drive != null){
       float x = (float) drive.xSlider;
       System.out.println("X: "+x);

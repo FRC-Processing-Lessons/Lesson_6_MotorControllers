@@ -1,3 +1,12 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2019 Shichao Liang. All Rights Reserved.                     */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the MIT license file in the root directory of       */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+/* Main class for Lesson 6                                                    */
+/*----------------------------------------------------------------------------*/
+
 class Robot extends ProcessingRobot{
 
   /* -----------------------------------------------------------------------------------
@@ -20,10 +29,10 @@ class Robot extends ProcessingRobot{
   // the sake of the simulation here, you won't need to.
   
   public void robotInit(){
-    /* -----------------------------------------------------------------------------------
+    /* ----------------------------------------------------------------------------------
      * TODO 2:
      * Initialize your new data fields here.  robotInit() is called once upon start-up.
-     * -----------------------------------------------------------------------------------*/
+     * ----------------------------------------------------------------------------------*/
 
     // Note: For the controller, you'll need to find the name of your device.  On my system, 
     // it's "Controller (Xbox One For Windows)"
@@ -34,17 +43,18 @@ class Robot extends ProcessingRobot{
   }
   
   public void teleopPeriodic(){
-    /* -----------------------------------------------------------------------------------
+    /* ----------------------------------------------------------------------------------
      * TODO 3:
      * This method is called periodically during operation for Teleop mode.  There should 
      * just be one line of code here!
-     * -----------------------------------------------------------------------------------*/
+     * ----------------------------------------------------------------------------------*/
 
   }
-
-  /*------------------- Do not modify anything down below!  -------------------*/
-  ControlIO control; // Not in a traditional FRC robot, just used for Processing inputs!
   
+  
+
+ /*------------------------- Do not modify anything down below!  -------------------------*/
+  ControlIO control; // Not in a traditional FRC robot, just used for Processing inputs!
   public Robot(ControlIO control){
     super(new PVector(width/2, height/2), 100, 75);
     this.control = control;

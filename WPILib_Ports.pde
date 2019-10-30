@@ -116,6 +116,7 @@ class CANTalonSRX implements SpeedController{
   }
 }
 
+
 interface SpeedController{
  
   void set(double speed);
